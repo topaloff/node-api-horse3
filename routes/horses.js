@@ -32,6 +32,20 @@ router.get('/prize/:id', (req, res, next) =>{
     })
 })
 
+//GET FULL DETAIL OF HORSE WITH OWNER
+router.get('/full/:id', (req, res, next) =>{
+    const id = req.params.id;
+    Horse.findById(id, (err, horse) => {
+        if(err) return next(err)
+        Owner.findById(horse.owner, (err, owner) => {
+            if(err) return next(err)
+            horse.owner = owner;
+            res.json(horse);
+        })
+    })
+})
+
+
 //ADD HORSE
 router.post('/add', checkAuth, (req, res, next)=>{
     Horse.find({certificat: req.body.certificat})
