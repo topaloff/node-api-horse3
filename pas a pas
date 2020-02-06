@@ -1,0 +1,80 @@
+1. Creer le modele de User
+
+const mongoose = require('mongoose');
+
+const UserSchema = new mongoose.Schema({
+    name: { type: String, required: true},
+    email: { type: String, required: true},
+    password: { type: String, required: true},
+    created_at: { type: Date, default: Date.now }
+})
+
+module.exports = mongoose.model('users', UserSchema);
+
+
+2. npm install jsonwebtoken bcrypt
+
+!!! Bcrypt pose souci sur windows.
+
+3. Creer un dossier middleware, creer un fichier chekAuth.js a l interieur
+const jwt = require('jsonwebtoken');
+
+module.exports = (req, res, next) => {
+    try{
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_KEY);
+        res.userData = decoded;
+        next();
+    }
+    catch(error){
+        res.status(401).json({ message: "Authentification KO - failed"});
+    }
+}
+
+
+4. Creer les routes dans user
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcrypt');
+const UserModel = require('../models/User');
+const jwt = require('jsonwebtoken');
+const checkAuth = require('../middleware/checkAuth');
+
+
+/* GET users listing. */
+router.get('/', function(req, res, next) {
+  res.send('respond with a resource');
+});
+
+//ADD USER 
+router.post('/signin', async(req, res) => {
+  try{
+    //je teste si l email est dans la base de donnees
+    const testUser = await UserModel.find({email: req.body.email});
+    if(testUser.length !== 0){
+      return res.status(409).json({ message: 'Ton email est deja utilise'});
+      res.end();
+    }
+    //On ajoute le user
+    const hashPassword = await bcrypt.hash(req.body.password,10);
+    const newUser = new UserModel({
+      name: req.body.name,
+      email: req.body.email,
+      password: hashPassword
+    });
+    const createdUser = await newUser.save();
+    res.status(201).json( createdUser );
+    res.end();
+  }
+  catch(error){
+      res.status(500).json({message : error});
+      res.end();
+  }
+})
+
+module.exports = router;
+
+
+
+5. 
+
