@@ -74,7 +74,22 @@ router.post('/signin', async(req, res) => {
 
 module.exports = router;
 
+ 5. pour proteger une route utiliser chechauth
+//ADD OWNER
+router.post('/add', checkAuth, (req, res, next)=>{
+    Owner.find({email: req.body.email})
+    .then(data => {
+        if(data.length !== 0){
+            res.status(409).json({message: 'Le owner existe deja'} );
+            res.end();
+        }
+    })
+    .catch(err => res.json(err))
 
-
-5. 
+    const newOwner = req.body;
+    Owner.create(newOwner, (err, owner) => {
+        if(err) return next(err)
+        res.json(owner)
+    })
+})
 
