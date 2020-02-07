@@ -74,8 +74,10 @@ router.post('/signin', async(req, res) => {
 
 module.exports = router;
 
- 5. pour proteger une route utiliser chechauth
-//ADD OWNER
+
+
+5. pour proteger une route utiliser chechauth
+/ADD OWNER
 router.post('/add', checkAuth, (req, res, next)=>{
     Owner.find({email: req.body.email})
     .then(data => {
