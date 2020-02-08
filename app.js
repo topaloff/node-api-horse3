@@ -10,12 +10,13 @@ var ownersRouter = require('./routes/owners');
 
 var app = express();
 
-require('dotenv').config({path: __dirname + '/.env'});
+require('dotenv').config({ path: __dirname + '/.env' });
 
 //MONGOOOSE OOKKKK
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DB, {
   useNewUrlParser: true,
+  useUnifiedTopology: true
 });
 module.exports = mongoose;
 const db = mongoose.connection;
@@ -43,12 +44,12 @@ app.use('/horses', horsesRouter);
 app.use('/owners', ownersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
